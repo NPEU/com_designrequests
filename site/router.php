@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+require(JPATH_ADMINISTRATOR . '/components/com_designrequests/helpers/designrequests.php');
+
 /**
  * DesignRequests Router
  */
@@ -273,8 +275,8 @@ class DesignRequestsRouter extends JComponentRouterBase
         #echo '<pre>'; var_dump($session); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($segments); echo '</pre>'; #exit;
         $app   = JFactory::getApplication();
-        $state_ids = $app->getUserState('com_designrequests.edit.designrequest.id');
-        #echo '<pre>'; var_dump($state); echo '</pre>'; exit;
+        
+        #echo '<pre>'; var_dump($state_ids); echo '</pre>'; exit;
 
         if (empty($segments)) {
             return;
@@ -337,6 +339,7 @@ class DesignRequestsRouter extends JComponentRouterBase
                 return $vars;
             }
 
+            $state_ids = $app->getUserState('com_designrequests.edit.designrequest.id');
             if ($state_ids == null || (is_array($state_ids) && !in_array($segments[1], $state_ids))) {
                 $vars['task'] = 'designrequest.edit';
             }
@@ -440,18 +443,8 @@ class DesignRequestsRouter extends JComponentRouterBase
      */
     protected function record_exists($id)
     {
-        if (is_numeric($id)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true)
-                ->select($db->quoteName('id'))
-                ->from($db->quoteName('#__designrequests'))
-                ->where($db->quoteName('id') . ' = ' . (int) $id);
-            $db->setQuery($query);
-
-            $record_id = $db->loadResult();
-            return (bool) $record_id;
-        }
-        return false;
+        $trello_client = DesignRequestsHelper::getTrelloClient();
+        return $trello_client->getCard($id);
     }
 }
 

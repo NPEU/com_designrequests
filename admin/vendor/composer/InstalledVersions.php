@@ -71,6 +71,15 @@ private static $installed = array (
       ),
       'reference' => '1e7e6be2dc543bf466236fb171e5b20e1b06aee6',
     ),
+    'michelf/php-markdown' => 
+    array (
+      'pretty_version' => '1.9.0',
+      'version' => '1.9.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'c83178d49e372ca967d1a8c77ae4e051b3a3c75c',
+    ),
     'npeu/com_designrequests' => 
     array (
       'pretty_version' => '1.0.0',

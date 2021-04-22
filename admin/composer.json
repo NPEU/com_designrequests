@@ -5,7 +5,8 @@
     "version": "1.0.0",
     "license": "MIT",
     "require": {
-        "stevenmaguire/trello-php": "^0.5.3"
+        "stevenmaguire/trello-php": "^0.5.3",
+        "michelf/php-markdown": "^1.9"
     },
     "authors": [
         {

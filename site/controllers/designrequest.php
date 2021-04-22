@@ -41,6 +41,20 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
      */
     #protected $urlVar = 'a.id';
 
+
+
+    protected function releaseEditId($context, $id)
+    {
+        // FormController messes up the id by casting it to an (int), so check for that and get
+        // the real id from the input:
+        if (is_int($id)) {
+            $input = JFactory::getApplication()->input;
+            $id = $input->get('id');
+        }
+        parent::releaseEditId($context, $id);
+    }
+
+
     /**
      * Method to add a new record.
      *
@@ -92,72 +106,35 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        /*$recordId   = (int) isset($data[$key]) ? $data[$key] : 0;
-        $categoryId = 0;
-
-        if ($recordId)
-        {
-            $categoryId = (int) $this->getModel()->getItem($recordId)->catid;
-        }
-
-        if ($categoryId)
-        {
-            // The category has been set. Check the category permissions.
-            return JFactory::getUser()->authorise('core.edit', $this->option . '.category.' . $categoryId);
-        }*/
         $user    = JFactory::getUser();
         $user_id = $user->id;
+        $user_is_root = $user->authorise('core.admin');
 
-        $record_id = (int) isset($data[$key]) ? $data[$key] : 0;
-
-        // If we have a record id, we also need the created_by id. If there isn't a form element for
-        // this, we need to fetch it:
-        if (!isset($data['created_by'])) {
-            if ($record_id > 0) {
-                $db = JFactory::getDbo();
-                $db->setQuery('SELECT created_by FROM #__designrequests WHERE ' . $key . ' = ' . $record_id);
-                $data['created_by'] = $db->loadResult();
-            } else {
-                $data['created_by'] = 0;
-            }
+        // FormController messes up the id by casting it to an (int), so check for that and get
+        // the real id from the input:
+        if (is_int($data[$key])) {
+            $input = JFactory::getApplication()->input;
+            $data[$key] = $input->get('id');
         }
 
+        $card = DesignRequestsHelper::$trello_cards[$data[$key]];
+        $user_string_id = $user->name . ' <' . $user->email . '>';
 
-        // This is based on what's found in the article admin controller but it returns null.
-        // I'm not sure how it's SUPPOSED to work, so fudging it for now with the line below it.
-        //$t = $user->authorise('core.edit.own', 'com_designrequests.' . $record_id);
-        if ($user->authorise('core.edit.own', $this->option)) {
-
-            // Now test the owner is the user.
-            $owner_id = (int) $data['created_by'];
-            if (empty($owner_id) && $record_id)
-            {
-                // Need to do a lookup from the model.
-                $record = $this->getModel()->getItem($record_id);
-
-                if (empty($record))
-                {
-                    return false;
-                }
-
-                $owner_id = $record->created_by;
-            }
-
-            // If the owner matches 'me' then do the test.
-            if ($owner_id == $user_id)
-            {
-                return true;
-            }
+        $is_own = false;
+        if ($user_string_id == $card->customFieldItemsKey['requested_by']->realvalue) {
+            $is_own = true;
         }
 
+        if ($user_is_root) {
+            $authorised = true;
+        } elseif ($is_own) {
+            $authorised = $user->authorise('core.edit.own', 'com_designrequests');
+        }
+        else {
+            $authorised = $user->authorise('core.edit', 'com_designrequests');
+        }
 
-        /*if ($user->id == $data['created_by']) {
-            return $user->authorise('core.edit.own', $this->option);
-        }*/
-
-
-        // Since there is no asset tracking, revert to the component permissions.
-        return parent::allowEdit($data, $key);
+        return $authorised;
     }
 
     /**
@@ -187,7 +164,83 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
      */
     public function edit($key = null, $urlVar = 'id')
     {
-        return parent::edit($key, $urlVar);
+        // we can't use the parent::edit because it forces the id to be an (int), so unfortunately
+        // I've had to copy and paste the code for that method here. I can't see another way
+        // round it:
+
+        // Do not cache the response to this, its a redirect, and mod_expires and google chrome browser bugs cache it forever!
+        \JFactory::getApplication()->allowCache(false);
+
+        $model = $this->getModel();
+        $table = $model->getTable();
+        $cid   = $this->input->post->get('cid', array(), 'array');
+        $context = "$this->option.edit.$this->context";
+
+        // Determine the name of the primary key for the data.
+        if (empty($key))
+        {
+            $key = $table->getKeyName();
+        }
+
+        // To avoid data collisions the urlVar may be different from the primary key.
+        if (empty($urlVar))
+        {
+            $urlVar = $key;
+        }
+
+        // Get the previous record id (if any) and the current record id.
+        // !!! ANDY: This is the problematic line:
+        #$recordId = (int) (count($cid) ? $cid[0] : $this->input->getInt($urlVar));
+        $recordId = (count($cid) ? $cid[0] : $this->input->get($urlVar));
+        $checkin = property_exists($table, $table->getColumnAlias('checked_out'));
+
+        // Access check.
+        if (!$this->allowEdit(array($key => $recordId), $key))
+        {
+            $this->setError(\JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
+            $this->setMessage($this->getError(), 'error');
+
+            $this->setRedirect(
+                \JRoute::_(
+                    'index.php?option=' . $this->option . '&view=' . $this->view_list
+                    . $this->getRedirectToListAppend(), false
+                )
+            );
+
+            return false;
+        }
+        /* We can't check out Trello cards so might as well skip this:
+        // Attempt to check-out the new record for editing and redirect.
+        if ($checkin && !$model->checkout($recordId))
+        {
+            // Check-out failed, display a notice but allow the user to see the record.
+            $this->setError(\JText::sprintf('JLIB_APPLICATION_ERROR_CHECKOUT_FAILED', $model->getError()));
+            $this->setMessage($this->getError(), 'error');
+
+            $this->setRedirect(
+                \JRoute::_(
+                    'index.php?option=' . $this->option . '&view=' . $this->view_item
+                    . $this->getRedirectToItemAppend($recordId, $urlVar), false
+                )
+            );
+
+            return false;
+        }
+        else
+        {*/
+            // Check-out succeeded, push the new record id into the session.
+            $this->holdEditId($context, $recordId);
+            \JFactory::getApplication()->setUserState($context . '.data', null);
+
+            $this->setRedirect(
+                \JRoute::_(
+                    'index.php?option=' . $this->option . '&view=' . $this->view_item
+                    . $this->getRedirectToItemAppend($recordId, $urlVar), false
+                )
+            );
+
+            return true;
+        #}
     }
 
     /**
@@ -214,8 +267,15 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
      */
     protected function getRedirectToItemAppend($recordId = null, $urlVar = null)
     {
+        // FormController messes up the id by casting it to an (int), so check for that and get
+        // the real id from the input:
+        if (is_int($recordId)) {
+            $input = JFactory::getApplication()->input;
+            $recordId = $input->get('id');
+        }
+
         $append = parent::getRedirectToItemAppend($recordId, $urlVar);
-        $itemId = $this->input->getInt('Itemid');
+        /*$itemId = $this->input->getInt('Itemid');
         $return = $this->getReturnPage();
 
         if ($itemId)
@@ -226,7 +286,7 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
         if ($return)
         {
             $append .= '&return=' . base64_encode($return);
-        }
+        }*/
 
         return $append;
     }
@@ -261,7 +321,7 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
         $is_ajax =  JFactory::getApplication()->input->get('ajax', '', 'bool');
 
         $result = parent::save($key, $urlVar);
-
+        #echo 'result<pre>'; var_dump($result); echo '</pre>'; exit;
         if ($is_ajax) {
             $app = JFactory::getApplication();
             try {
