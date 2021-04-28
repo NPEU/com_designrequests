@@ -100,9 +100,9 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
                 $class = 'c-system-message  t-warning';
             }*/
             if ($today_stamp >= $deadline) {
-                $class = 'c-system-message  t-error';
+                $class = 't-error';
             } elseif ($today_stamp + $close_diff >= $deadline) {
-                $class = 'c-system-message  t-warning';
+                $class = 't-warning';
             }
             
         ?>
@@ -135,7 +135,7 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
                 <?php echo date($date_format, strtotime($item->customFieldItemsKey['requested_on']->value->date)); ?>
             </td>
             <td class="<?php echo $class; ?>">
-                <?php echo '<svg display="none" focusable="false" class="icon  u-space--left--xs" aria-hidden="true"><use xlink:href="#icon-' . $item->status_key . '"></use></svg> &ensp;' . $item->status; ?>
+                <?php echo '<svg display="none" focusable="false" class="icon  u-space--left--xs" aria-hidden="true"><use xlink:href="#icon-' . $item->status_key . '"></use></svg> &ensp;<span>' . $item->status . '</span>'; ?>
             </td>
         </tr>
         <?php endforeach; ?>
