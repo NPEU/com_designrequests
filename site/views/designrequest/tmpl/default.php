@@ -75,11 +75,14 @@ $skip = array(
 </div>
 
 
-<p>
-    <a href="<?php echo JRoute::_('index.php?option=com_designrequests&task=designrequest.edit&id=' . $this->item->id); ?>">
-        <?php echo JText::_('COM_DESIGNREQUESTS_RECORDS_ACTION_EDIT'); ?>
+<p class="c-utilitext  u-text-size--medium">
+    <a href="<?php echo JRoute::_('index.php?option=com_designrequests'); ?>">
+        <svg display="none" focusable="false" class="icon" aria-hidden="true"><use xlink:href="#icon-chevron-left"></use></svg>
+        <span>Back</span>
     </a>
-</p>
-<p>
-    <a href="<?php echo JRoute::_('index.php?option=com_designrequests'); ?>">Back</a>
+    
+    <a href="<?php echo JRoute::_('index.php?option=com_designrequests&task=designrequest.edit&id=' . $this->item->id); ?>" class="u-space--left--s">
+        <span><?php echo JText::_('COM_DESIGNREQUESTS_RECORDS_ACTION_EDIT'); ?></span>
+        <svg display="none" focusable="false" class="icon  u-space--left--xs" aria-hidden="true"><use xlink:href="#icon-edit"></use></svg>
+    </a>
 </p>

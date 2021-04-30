@@ -67,6 +67,9 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
                 <?php echo JText::_('COM_DESIGNREQUESTS_TITLE'); ?>
             </th>
             <th>
+                <?php echo JText::_('COM_DESIGNREQUESTS_ACTIONS'); ?>
+            </th>
+            <th>
                 <?php echo JText::_('COM_DESIGNREQUESTS_PROJECT'); ?>
             </th>
             <th>
@@ -91,7 +94,7 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
             }
             $authorised = $this->user->authorise('core.edit', 'com_designrequests');
             
-            $class = '';
+            $class = 'u-padding--s';
             
             $deadline = strtotime($item->due);
             /*if ($today_stamp + $high_diff >= $deadline) {
@@ -100,9 +103,9 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
                 $class = 'c-system-message  t-warning';
             }*/
             if ($today_stamp >= $deadline) {
-                $class = 't-error';
+                $class .= '  t-error';
             } elseif ($today_stamp + $close_diff >= $deadline) {
-                $class = 't-warning';
+                $class .= '  t-warning';
             }
             
         ?>
@@ -117,12 +120,16 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
                 <a href="<?php echo $view_link; ?>" title="<?php echo JText::_('COM_DESIGNREQUESTS_VIEW_RECORD'); ?>">
                     <?php echo $item->name; ?>
                 </a>
+            </td>
+            
+            <td class="<?php echo $class; ?>">
                 <?php if($is_own || $authorised): ?>
-                <br>
-                <br>
                 <a href="<?php echo $edit_link; ?>" title="<?php echo JText::_('COM_DESIGNREQUESTS_EDIT_RECORD'); ?>">
                     <?php echo JText::_('COM_DESIGNREQUESTS_RECORDS_ACTION_EDIT'); ?>
                 </a>
+                <svg display="none" focusable="false" class="icon  u-space--left--xs" aria-hidden="true"><use xlink:href="#icon-edit"></use></svg>
+                <?php else: ?>
+                -
                 <?php endif; ?>
             </td>
             <td class="<?php echo $class; ?>">
