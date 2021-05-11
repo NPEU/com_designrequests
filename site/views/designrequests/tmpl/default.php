@@ -122,7 +122,7 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
                 </a>
             </td>
             
-            <td class="<?php echo $class; ?>">
+            <td class="<?php echo $class; ?>  u-no-wrap">
                 <?php if($is_own || $authorised): ?>
                 <a href="<?php echo $edit_link; ?>" title="<?php echo JText::_('COM_DESIGNREQUESTS_EDIT_RECORD'); ?>">
                     <?php echo JText::_('COM_DESIGNREQUESTS_RECORDS_ACTION_EDIT'); ?>
