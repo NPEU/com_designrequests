@@ -55,7 +55,7 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
     </symbol>
 </svg>
 <p>
-<a href="<?php echo JRoute::_('index.php?option=com_designrequests&task=designrequest.add'); ?>" class="c-cta">Add new</a>
+    <a href="<?php echo JRoute::_('index.php?option=com_designrequests&task=designrequest.add'); ?>" class="c-cta  t-warning">Submit a new design request</a>
 </p>
 <table class="table table-striped table-hover" id="<?php echo $table_id; ?>">
     <thead>
@@ -153,3 +153,6 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
         <?php endif; ?>
     </tbody>
 </table>
+<p>
+    <a href="<?php echo JRoute::_('index.php?option=com_designrequests&task=designrequest.add'); ?>" class="c-cta  t-warning">Submit a new design request</a>
+</p>
