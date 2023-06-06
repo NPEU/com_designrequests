@@ -70,17 +70,23 @@ $hidden_inputs = array();
 ?>
     <fieldset<?php echo $inputs_fieldset_class; ?>>
         <legend><?php echo JText::_($inputs_fieldset_info->label); ?></legend>
-        <ol class="ff-width-100--45--66-666  u-space--left--auto  u-space--right--auto">
-            <?php foreach($inputs_fieldset as $field): ?><?php if($field->type == 'Hidden'): ?>
-            <?php $hidden_inputs[] = $field; ?>
-            <?php elseif($field->type == 'Button'): ?>
-            <li class="l-col-to-row"><span class="ff-width-100--30--25 l-col-to-row__item"></span><span class="ff-width-100--30--75 l-col-to-row__item"><?php echo $field->input;?><s/pan></li>
-            <?php elseif($field->type == 'Checkbox'): ?>
-            <li class="l-col-to-row"><span class="ff-width-100--30--25 l-col-to-row__item"></span><span class="ff-width-100--30--75 l-col-to-row__item"><?php echo $field->input;echo JText::_($field->label); ?></span></li>
-            <?php else: ?>
-            <li class="l-col-to-row"><span class="ff-width-100--30--25 l-col-to-row__item"><?php echo JText::_($field->label);?></span><span class="ff-width-100--30--75 l-col-to-row__item"><?php echo $field->input; ?></li>
-            <?php endif; ?><?php endforeach; ?>
-        </ol>
+
+        <?php foreach($inputs_fieldset as $field): ?><?php if($field->type == 'Hidden'): ?>
+        <?php $hidden_inputs[] = $field; ?>
+        <?php elseif($field->type == 'Button'): ?>
+        <div class="l-layout  l-row">
+            <div class="l-layout__inner"><span class="ff-width-100--30--25  l-box"></span><span class="ff-width-100--30--75  l-box"><?php echo $field->input;?></span></div>
+        </div>
+        <?php elseif($field->type == 'Checkbox'): ?>
+        <div class="l-layout  l-row">
+            <div class="l-layout__inner"><span class="ff-width-100--30--25  l-box"></span><span class="ff-width-100--30--75  l-box"><?php echo $field->input;echo JText::_($field->label); ?></span></div>
+        </div>
+        <?php else: ?>
+        <div class="l-layout  l-row">
+            <div class="l-layout__inner"><span class="ff-width-100--30--25  l-box"><?php echo JText::_($field->label);?></span><span class="ff-width-100--30--75  l-box"><?php echo $field->input; ?></span></div>
+        </div>
+        <?php endif; ?><?php endforeach; ?>
+
         <?php foreach($hidden_inputs as $field): ?>
         <?php echo $field->input;?>
         <?php endforeach; ?>
@@ -106,6 +112,7 @@ $controls_fieldset = $this->form->getFieldset('controls');
         <a class="btn" href="<?php echo JRoute::_('index.php?option=com_designrequests'); ?>"><?php echo JText::_('JCANCEL') ?></a>
         */ ?>
         <button class="btn" type="submit" onclick="return Joomla.submitbutton('designrequest.save')"><?php echo JText::_('COM_DESIGNREQUESTS_SUBMIT_LABEL'); ?></button>
+        &emsp;
         <a class="btn" href="<?php echo JRoute::_('index.php?option=com_designrequests'); ?>" onclick="return Joomla.submitbutton('designrequest.cancel')"><?php echo JText::_('JCANCEL') ?></a>
     </fieldset>
 </form>

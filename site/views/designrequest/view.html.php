@@ -33,9 +33,9 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
         #echo '<pre>'; var_dump($input); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($document); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($user); echo '</pre>'; exit;
-        
+
         #echo '<pre>'; var_dump($this->_defaultModel); echo '</pre>'; exit;
-        
+
         $user_is_root = $user->authorise('core.admin');
         #echo '<pre>'; var_dump($user_is_root); echo '</pre>'; exit;
 
@@ -49,13 +49,13 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
         // having to manually declare them, along with any other properties of the form that may be
         // useful:
         $form = $this->get('Form');
-        
+
         #echo '<pre>'; var_dump($trello_fields_data_key_map); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($trello_fields_data_name_map); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($form); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($this->getLayout()); echo '</pre>'; exit;
 
-        
+
         $menus  = $app->getMenu();
         $menu   = $menus->getActive();
         #echo '<pre>'; var_dump($menu); echo '</pre>'; exit;
@@ -69,7 +69,7 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
 
         $is_new = empty($item->id);
         $is_own = false;
-        
+
         $user_string_id = $user->name . ' <' . $user->email . '>';
         #echo '<pre>'; var_dump($item->customFieldItemsKey['requested_by']->realvalue); echo '</pre>'; exit;
         if (!$is_new && ($user_string_id == $item->customFieldItemsKey['requested_by']->realvalue)) {
@@ -130,10 +130,10 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
 
         // Display the view
         parent::display($tpl);
-        
-        if ($input->get('layout') == 'form') {  
+
+        if ($input->get('layout') == 'form') {
             $document->page_heading_additional = ': ' . (
-                $is_new 
+                $is_new
               ? JText::_('COM_DESIGNREQUESTS_REQUEST_CREATING')
               : JText::_('COM_DESIGNREQUESTS_REQUEST_EDITING') . ' ' . $item->name
             );
@@ -169,7 +169,7 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
         // Display the view
         parent::display($tpl);*/
     }
-    
+
     /**
      * Method to set up the document properties
      *

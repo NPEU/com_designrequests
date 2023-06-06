@@ -48,7 +48,7 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
         // FormController messes up the id by casting it to an (int), so check for that and get
         // the real id from the input:
         if (is_int($id)) {
-            $input = JFactory::getApplication()->input;
+            $input = \JFactory::getApplication()->input;
             $id = $input->get('id');
         }
         parent::releaseEditId($context, $id);
@@ -84,7 +84,7 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
         if ($categoryId)
         {
             // If the category has been passed in the URL check it.
-            $allow = JFactory::getUser()->authorise('core.create', $this->option . '.category.' . $categoryId);
+            $allow = \JFactory::getUser()->authorise('core.create', $this->option . '.category.' . $categoryId);
         }
 
         if ($allow !== null)
@@ -106,14 +106,14 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        $user    = JFactory::getUser();
+        $user    = \JFactory::getUser();
         $user_id = $user->id;
         $user_is_root = $user->authorise('core.admin');
 
         // FormController messes up the id by casting it to an (int), so check for that and get
         // the real id from the input:
         if (is_int($data[$key])) {
-            $input = JFactory::getApplication()->input;
+            $input = \JFactory::getApplication()->input;
             $data[$key] = $input->get('id');
         }
 
@@ -209,6 +209,7 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
 
             return false;
         }
+
         /* We can't check out Trello cards so might as well skip this:
         // Attempt to check-out the new record for editing and redirect.
         if ($checkin && !$model->checkout($recordId))
@@ -228,10 +229,41 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
         }
         else
         {*/
+            #echo '<pre>'; var_dump($this->view_item); echo '</pre>'; exit;
+            #$this->holdEditId($context, $recordId);
+            #\JFactory::getApplication()->setUserState($context . '.t', null);
+            /*$t = \JFactory::getApplication()->getUserState($context . '.t');
+            if (!$t) {
+                \JFactory::getApplication()->setUserState($context . '.t', 1);
+                $this->setRedirect(
+                    \JRoute::_(
+                        'index.php?option=' . $this->option . '&view=' . $this->view_item
+                        . $this->getRedirectToItemAppend($recordId, $urlVar), false
+                    )
+                );
+                #echo '<pre>'; var_dump($t); echo '</pre>'; exit;
+                return true;
+            }*/
+
+
+            #echo '<pre>'; var_dump($t); echo '</pre>'; exit;
+            /*
+            echo '<pre>'; var_dump(
+                \JRoute::_(
+                    'index.php?option=' . $this->option . '&view=' . $this->view_item
+                    . $this->getRedirectToItemAppend($recordId, $urlVar), false
+                )
+            ); echo '</pre>'; exit;
             // Check-out succeeded, push the new record id into the session.
+
+            // Hmmm, I don't fully understand why we need to do this (push new ecord ID?) - I can't
+            // see that any record ID is being pushed into the session below (it's actually clearing
+            // it), and it's broken because it results in an infinite redirect. Leave commented for
+            // now for reference as I suspect its need will become apparent.
+
             $this->holdEditId($context, $recordId);
             \JFactory::getApplication()->setUserState($context . '.data', null);
-
+            #echo '<pre>'; var_dump('here2'); echo '</pre>'; exit;
             $this->setRedirect(
                 \JRoute::_(
                     'index.php?option=' . $this->option . '&view=' . $this->view_item
@@ -240,7 +272,9 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
             );
 
             return true;
+            */
         #}
+
     }
 
     /**
@@ -270,7 +304,7 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
         // FormController messes up the id by casting it to an (int), so check for that and get
         // the real id from the input:
         if (is_int($recordId)) {
-            $input = JFactory::getApplication()->input;
+            $input = \JFactory::getApplication()->input;
             $recordId = $input->get('id');
         }
 
@@ -318,12 +352,12 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
      */
     public function save($key = null, $urlVar = 'id')
     {
-        $is_ajax =  JFactory::getApplication()->input->get('ajax', '', 'bool');
+        $is_ajax =  \JFactory::getApplication()->input->get('ajax', '', 'bool');
 
         $result = parent::save($key, $urlVar);
         #echo 'result<pre>'; var_dump($result); echo '</pre>'; exit;
         if ($is_ajax) {
-            $app = JFactory::getApplication();
+            $app = \JFactory::getApplication();
             try {
                 $record_id = false;
 
@@ -333,7 +367,7 @@ class DesignRequestsControllerDesignRequest extends JControllerForm
                     $message = $is_new ? JText::_('JLIB_APPLICATION_SUBMIT_SAVE_SUCCESS')
                                        : JText::_('JLIB_APPLICATION_SAVE_SUCCESS');
                     // Get the latest id:
-                    $db = JFactory::getDbo();
+                    $db = \JFactory::getDbo();
                     $record_id = $db->insertid();
                 } else {
                     $message_type = 'error';

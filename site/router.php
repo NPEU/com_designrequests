@@ -275,7 +275,7 @@ class DesignRequestsRouter extends JComponentRouterBase
         #echo '<pre>'; var_dump($session); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($segments); echo '</pre>'; #exit;
         $app   = JFactory::getApplication();
-        
+
         #echo '<pre>'; var_dump($state_ids); echo '</pre>'; exit;
 
         if (empty($segments)) {
@@ -339,10 +339,10 @@ class DesignRequestsRouter extends JComponentRouterBase
                 return $vars;
             }
 
-            $state_ids = $app->getUserState('com_designrequests.edit.designrequest.id');
-            if ($state_ids == null || (is_array($state_ids) && !in_array($segments[1], $state_ids))) {
-                $vars['task'] = 'designrequest.edit';
-            }
+            #$state_ids = $app->getUserState('com_designrequests.edit.designrequest.id');
+            #if ($state_ids == null || (is_array($state_ids) && !in_array($segments[1], $state_ids))) {
+            #    $vars['task'] = 'designrequest.edit';
+            #}
 
             // 'edit' task will invoke 'edit' controller method which in turn calls the 'check-out'
             // model method. It will then redirect.
@@ -355,7 +355,7 @@ class DesignRequestsRouter extends JComponentRouterBase
             $vars['view']   = 'designrequest';
             $vars['layout'] = 'form';
             $vars['id']     = $segments[1];
-
+            #echo '<pre>'; var_dump($vars); echo '</pre>'; exit;
             return $vars;
         }
 

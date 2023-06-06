@@ -78,7 +78,7 @@ class DesignRequestsViewDesignRequests extends JViewLegacy
         $this->fields_projects = $this->get('FieldsProjects');
         #$this->items = $this->get('AllItems');
         #$this->items = $this->get('UnpublishedItems');
-        
+
         #echo '<pre>'; var_dump($this->items); echo '</pre>'; exit;
         #echo '<pre>'; var_dump($this->status_list_key_name_map); echo '</pre>'; exit;
 

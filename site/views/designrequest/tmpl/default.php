@@ -22,7 +22,15 @@ $skip = array(
     'desc'
 );
 ?>
+
 <div class="l-box  l-box--space--edge">
+    <p>
+        <a href="<?php echo JRoute::_('index.php?option=com_designrequests&task=designrequest.edit&id=' . $this->item->id); ?>" class="u-space--left--s">
+            <span><?php echo JText::_('COM_DESIGNREQUESTS_RECORDS_ACTION_EDIT'); ?></span>
+            <svg focusable="false" aria-hidden="true" width="1.25em" height="1.25em" display="none"><use xlink:href="#icon-edit"></use></svg>
+        </a>
+    </p>
+
     <h2><?php echo $page_title ?></h2>
 
     <div class="l-layout  l-row  l-gutter  l-flush-edge-gutter">
@@ -74,7 +82,7 @@ $skip = array(
                 </div>
                 <?php endforeach; ?>
             </div>
-
+            <?php /*
             <p class="l-box l-layout  l-row  l-gutter  l-flush-edge-gutter">
                 <span class="l-layout__inner  c-utilitext">
                     <span class="l-box">
@@ -91,6 +99,13 @@ $skip = array(
                     </span>
                 </span>
             </p>
+            */ ?>
         </div>
     </div>
+    <p>
+        <a href="<?php echo JRoute::_('index.php?option=com_designrequests'); ?>">
+            <svg focusable="false" aria-hidden="true" width="1.25em" height="1.25em" display="none"><use xlink:href="#icon-chevron-left"></use></svg>
+            <span>Back</span>
+        </a>
+    </p>
 </div>
