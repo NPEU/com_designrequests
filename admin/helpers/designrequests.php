@@ -300,7 +300,7 @@ class DesignRequestsHelper
 
         return self::$trello_client;
     }
-    
+
     /**
      * Update a Trello card
      *
@@ -315,7 +315,7 @@ class DesignRequestsHelper
             'desc'     => $data['info'],
             'due'      => date('c', $data['deadline'])
         ];*/
-        
+
         $trello_data = [
             'id'      => '',
             'idBoard' => self::$trello_board_id,
@@ -323,8 +323,8 @@ class DesignRequestsHelper
             'due'     => $data['due'],
             'desc'    => $data['desc']
         ];
-        
-        
+
+
         if (empty($data['id'])) {
             $trello_data['idList'] = array_search('new', self::$trello_status_list_id_key_map);
             $result = self::$trello_client->addCard($trello_data);
@@ -334,11 +334,11 @@ class DesignRequestsHelper
             $card_id = $data['id'];
             $trello_data['id'] = $card_id;
             $result = self::$trello_client->updateCard($card_id, $trello_data);
-            
+
             $is_new = false;
         }
-        
-        
+
+
         /* Not sure if I should allow new projects to be created via the web form.
         Leave this out for now (NOTE THIS IS NOT COMPLETE - IT NEEDS TO BE ADAPTED
         if (!in_array($project_name, $this->trello_projects)) {
@@ -361,7 +361,7 @@ class DesignRequestsHelper
         } else {
             $project_option_id = array_search($project_name, $this->trello_projects);
         }
-        
+
         $attributes = array("idValue" => $project_option_id);
         try {
             $project_result = $client->updateCardCustomField($card_id, $this->trello_projects_field_id, $attributes);
@@ -371,17 +371,17 @@ class DesignRequestsHelper
             exit;
         }
         */
-        
+
         $user = JFactory::getUser();
         $fields_data = [];
-        
+
         if ($is_new) {
             // Created date:
             $created_date = date('c');
             $attributes = array("value" => array("date" => $created_date));
             $field_id = array_search('requested_on', self::$trello_fields_data_key_map);
             $fields_data[$field_id] = $attributes;
- 
+
 
             // Created by:
             $created_by = $user->name . ' <' . $user->email . '>';
@@ -389,19 +389,19 @@ class DesignRequestsHelper
             $field_id = array_search('requested_by', self::$trello_fields_data_key_map);
             $fields_data[$field_id] = $attributes;
         }
-        
+
         // Project:
         $project_option = array_search($data['project'], self::$trello_fields_projects);
         $attributes = array("idValue" => $project_option);
         $field_id = array_search('project', self::$trello_fields_data_key_map);
         $fields_data[$field_id] = $attributes;
-        
+
         // Job Type:
         $job_type_option = array_search($data['job_type'], self::$trello_fields_job_types);
         $attributes = array("idValue" => $job_type_option);
         $field_id = array_search('job_type', self::$trello_fields_data_key_map);
         $fields_data[$field_id] = $attributes;
-        
+
         // In/out house printing:
         $print_option = array_search($data['print'], self::$trello_fields_print);
         $attributes = array("idValue" => $print_option);
@@ -415,12 +415,12 @@ class DesignRequestsHelper
         $fields_data[$field_id] = $attributes;
 
 
-        
-        
+
+
         #echo '<pre>'; var_dump($trello_data); echo '</pre>'; #exit;
         #echo '<pre>'; var_dump($fields_data); echo '</pre>'; exit;
-        
-        
+
+
         foreach ($fields_data as $field_id => $attributes) {
             try {
                 $result = self::$trello_client->updateCardCustomField($card_id, $field_id, $attributes);
@@ -430,7 +430,7 @@ class DesignRequestsHelper
                 exit;
             }
         }
-        
+
         return $card_id;
     }
 

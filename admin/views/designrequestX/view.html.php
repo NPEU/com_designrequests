@@ -30,7 +30,7 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
      * @return  void
      */
     public function display($tpl = null)
-    {
+    {#echo '<pre>'; var_dump($tpl); echo '</pre>';exit;
         $this->state = $this->get('State');
         $this->item  = $this->get('Item');
         $this->form  = $this->get('Form');
@@ -61,9 +61,9 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
     protected function addToolBar()
     {
         // Hide Joomla Administrator Main menu:
-        JFactory::getApplication()->input->set('hidemainmenu', true);
+        \JFactory::getApplication()->input->set('hidemainmenu', true);
 
-        $user       = JFactory::getUser();
+        $user       = \JFactory::getUser();
         $userId     = $user->id;
 
 
@@ -74,38 +74,38 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
         $canDo = JHelperContent::getActions('com_designrequests');
 
         // Note 'question-circle' is an icon/classname. Change to suit in all views.
-        JToolbarHelper::title(
-            JText::_('COM_DESIGNREQUESTS_MANAGER_' . ($checkedOut ? 'RECORD_VIEW' : ($isNew ? 'RECORD_ADD' : 'RECORD_EDIT'))),
+        \JToolbarHelper::title(
+            \JText::_('COM_DESIGNREQUESTS_MANAGER_' . ($checkedOut ? 'RECORD_VIEW' : ($isNew ? 'RECORD_ADD' : 'RECORD_EDIT'))),
             'question-circle'
         );
 
         // For new records, check the create permission.
         if ($isNew && (count($user->getAuthorisedCategories('com_designrequests', 'core.create')) > 0)) {
-            JToolbarHelper::apply('designrequest.apply');
-            JToolbarHelper::save('designrequest.save');
-            JToolbarHelper::save2new('designrequest.save2new');
-            JToolbarHelper::cancel('designrequest.cancel');
+            \JToolbarHelper::apply('designrequest.apply');
+            \JToolbarHelper::save('designrequest.save');
+            \JToolbarHelper::save2new('designrequest.save2new');
+            \JToolbarHelper::cancel('designrequest.cancel');
         } else {
             // Since it's an existing record, check the edit permission, or fall back to edit own if the owner.
             $itemEditable = $canDo->get('core.edit') || ($canDo->get('core.edit.own') && $this->item->created_by == $userId);
 
             // Can't save the record if it's checked out and editable
             if (!$checkedOut && $itemEditable) {
-                JToolbarHelper::apply('designrequest.apply');
-                JToolbarHelper::save('designrequest.save');
+                \JToolbarHelper::apply('designrequest.apply');
+                \JToolbarHelper::save('designrequest.save');
 
                 // We can save this record, but check the create permission to see if we can return to make a new one.
                 if ($canDo->get('core.create')) {
-                    JToolbarHelper::save2new('designrequest.save2new');
+                    \JToolbarHelper::save2new('designrequest.save2new');
                 }
             }
             // If checked out, we can still save
             if ($canDo->get('core.create')) {
-                JToolbarHelper::save2copy('designrequest.save2copy');
+                \JToolbarHelper::save2copy('designrequest.save2copy');
             }
 
 
-            JToolbarHelper::cancel('designrequest.cancel', 'JTOOLBAR_CLOSE');
+            \JToolbarHelper::cancel('designrequest.cancel', 'JTOOLBAR_CLOSE');
         }
     }
     /**
@@ -116,16 +116,16 @@ class DesignRequestsViewDesignRequest extends JViewLegacy
     protected function setDocument()
     {
         $isNew = ($this->item->id < 1);
-        $document = JFactory::getDocument();
-        $document->setTitle($isNew ? JText::_('COM_DESIGNREQUESTS_RECORD_CREATING') :
-                JText::_('COM_DESIGNREQUESTS_RECORD_EDITING'));
+        $document = \JFactory::getDocument();
+        $document->setTitle($isNew ? \JText::_('COM_DESIGNREQUESTS_RECORD_CREATING') :
+                \JText::_('COM_DESIGNREQUESTS_RECORD_EDITING'));
 
         if (!empty($this->script)) {
-            $document->addScript(JURI::root() . $this->script);
+            $document->addScript(\JURI::root() . $this->script);
         }
 
-        $document->addScript(JURI::root() . "/administrator/components/com_designrequests"
+        $document->addScript(\JURI::root() . "/administrator/components/com_designrequests"
                                           . "/views/designrequest/submitbutton.js");
-        JText::script('COM_DESIGNREQUESTS_RECORD_ERROR_UNACCEPTABLE');
+        \JText::script('COM_DESIGNREQUESTS_RECORD_ERROR_UNACCEPTABLE');
     }
 }
