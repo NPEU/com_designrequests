@@ -38,18 +38,6 @@
         <!-- Administration Menu Section -->
         <menu>COM_DESIGNREQUESTS_MENU</menu>
         <!-- Submenu, delete if component has only one view -->
-        <submenu>
-            <!--
-                Note that all & must be escaped to &amp; for the file to be valid
-                XML and be parsed by the installer
-            -->
-            <menu link="option=com_designrequests" view="designrequests">
-                COM_DESIGNREQUESTS_MANAGER_SUBMENU_RECORDS
-            </menu>
-            <menu link="option=com_categories&amp;extension=com_designrequests" view="categories">
-                COM_DESIGNREQUESTS_MANAGER_SUBMENU_CATEGORIES
-            </menu>
-        </submenu>
 
         <!-- Administration Main File Copy Section -->
         <!-- Note the folder attribute: This attribute describes the folder
