@@ -2,112 +2,16 @@
 <config>
     <fieldset
         name="designrequests"
-        label="COM_DESIGNREQUESTS_CONFIG_SETTINGS_LABEL"
-        description="COM_DESIGNREQUESTS_CONFIG_SETTINGS_DESC"
+        label="COM_DESIGNREQUESTS_CONFIG_RECORDS_SETTINGS_LABEL"
+        description="COM_DESIGNREQUESTS_CONFIG_RECORDS_SETTINGS_DESC"
     >
         <field
-            name="trello_token"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_TOKEN_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_TOKEN_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_key"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_KEY_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_KEY_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_board_id"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_BOARD_ID_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_BOARD_ID_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_dev_board_id"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_DEV_BOARD_ID_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_DEV_BOARD_ID_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_listname_new"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_NEW_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_NEW_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_listname_awaiting_content"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_AWAITING_CONTENT_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_AWAITING_CONTENT_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_listname_in_progress"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_IN_PROGRESS_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_IN_PROGRESS_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_listname_awaiting_feedback"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_AWAITING_FEEDBACK_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_AWAITING_FEEDBACK_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_listname_done"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_DONE_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_LISTNAME_DONE_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_fieldname_project"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_PROJECT_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_PROJECT_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_fieldname_job_type"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_JOB_TYPE_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_JOB_TYPE_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_fieldname_print"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_PRINT_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_PRINT_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_fieldname_print_size"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_PRINT_SIZE_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_PRINT_SIZE_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_fieldname_requested_on"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_REQUESTED_ON_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_REQUESTED_ON_DESC"
-            filter="string"
-        />
-        <field
-            name="trello_fieldname_requested_by"
-            type="text"
-            label="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_REQUESTED_BY_LABEL"
-            description="COM_DESIGNREQUESTS_CONFIG_TRELLO_FIELDNAME_REQUESTED_BY_DESC"
+            name="email_admins"
+            type="textarea"
+            label="COM_DESIGNREQUESTS_CONFIG_EMAIL_ADMINS_LABEL"
+            description="COM_DESIGNREQUESTS_CONFIG_EMAIL_ADMINS_DESC"
+            cols="50"
+            rows="10"
             filter="string"
         />
     </fieldset>
@@ -116,12 +20,12 @@
         description="JCONFIG_PERMISSIONS_DESC"
         label="JCONFIG_PERMISSIONS_LABEL"
     >
-
         <field name="rules" type="rules"
             component="com_designrequests"
             filter="rules"
             validate="rules"
             label="JCONFIG_PERMISSIONS_LABEL"
-            section="component" />
+            section="component"
+        />
     </fieldset>
 </config>
