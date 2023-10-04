@@ -26,34 +26,94 @@ use Joomla\CMS\Language\Text;
 #use Joomla\CMS\Helper\TagsHelper;
 #use Joomla\CMS\UCM\UCMType;
 
-
+use NPEU\Component\Designrequests\Administrator\Helper\DesignrequestsHelper;
 
 /**
  * Designrequest Model
  */
 class DesignrequestModel extends AdminModel
 {
-    /**
-     * Method to get a table object, load it if necessary.
-     *
-     * @param   string  $type    The table name. Optional.
-     * @param   string  $prefix  The class prefix. Optional.
-     * @param   array   $config  Configuration array for model. Optional.
-     *
-     * @return  \Joomla\CMS\Table\Table  A \Joomla\CMS\Table\Table object
-     */
-    /*public function getTable($type = 'Designrequests', $prefix = 'DesignrequestsTable', $config = array())
-    {
-        return \Joomla\CMS\Table\Table::getInstance($type, $prefix, $config);
-    }*/
+    protected $trello_client;
 
     /**
-     * Method to get the record form.
+     * Constructor.
+     *
+     * @param   array  $config  An optional associative array of configuration settings.
+     *
+     * @see     \JModelLegacy
+     * @since   1.6
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
+
+        $this->setup();
+    }
+
+
+    public function setup() {
+        $trello_client = DesignRequestsHelper::getTrelloClient();
+        $this->trello_client = $trello_client;
+
+        if (!$this->trello_client) {
+            // @TODO - throw some error
+        }
+    }
+
+    /*
+        The controller DesignRequestsControllerDesignRequest extends JControllerForm to handle
+        form processing, but that controller uses the model AND a table to 'checkin' content, so
+        here we're having to spoof the getTable method to fool that controller.
+        Ugh! Consider this all 'tainted'. I guess using an API as a model in Joomla just isn't
+        possible to to neatly, without replicating Joomla code :-(
+    */
+    public function getTable($name = '', $prefix = 'Table', $options = array())
+    {
+        $table = new class {
+            public $spoof = false;
+
+            public function getColumnAlias($name) {
+                return 'spoof';
+            }
+
+            public function getKeyName() {
+                return 'id';
+            }
+        };
+
+        return $table;
+    }
+
+    /*
+        The FormController needs the 'id' in the $validData array, but I can't figure out how its'
+        meant to appear there (probably to do with state which baffles me).
+        So I'm forcing it to be in the array to avoid the notice:
+    */
+    public function validate($form, $data, $group = null)
+    {
+        // FormController messes up the id by casting it to an (int), so check for that and get
+        // the real id from the input:
+        if (is_int($data['id'])) {
+            $input = Factory::getApplication()->input;
+            $data['id'] = $input->get('id');
+        }
+
+        $return = parent::validate($form, $data, $group);
+        if (is_array($return) && empty($return['id'])) {
+            $return['id'] = 0;
+        }
+
+        return $return;
+    }
+
+    /**
+     * Method for getting the form from the model.
      *
      * @param   array    $data      Data for the form.
      * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
      *
-     * @return  mixed    A JForm object on success, false on failure
+     * @return  \JForm|boolean  A \JForm object on success, false on failure
+     *
      */
     public function getForm($data = array(), $loadData = true)
     {
@@ -70,31 +130,22 @@ class DesignrequestModel extends AdminModel
         if (empty($form)) {
             return false;
         }
-
-        // Modify the form based on access controls.
-        if (!$this->canEditState((object) $data)) {
-            // Disable fields for display.
-            $form->setFieldAttribute('state', 'disabled', 'true');
-            $form->setFieldAttribute('publish_up', 'disabled', 'true');
-            $form->setFieldAttribute('publish_down', 'disabled', 'true');
-
-            // Disable fields while saving.
-            // The controller has already verified this is a record you can edit.
-            $form->setFieldAttribute('state', 'filter', 'unset');
-            $form->setFieldAttribute('publish_up', 'filter', 'unset');
-            $form->setFieldAttribute('publish_down', 'filter', 'unset');
-        }
-
         return $form;
     }
 
     /**
      * Method to get the data that should be injected in the form.
      *
-     * @return  mixed  The data for the form.
+     * @return  array  The default data is an empty array.
+     *
+     * @since   1.6
      */
     protected function loadFormData()
     {
+        if ($this->is_in_list_view) {
+            return false;
+        }
+
         // Check the session for previously entered form data.
         $data = Factory::getApplication()->getUserState(
             'com_designrequests.edit.designrequest.data',
@@ -105,247 +156,379 @@ class DesignrequestModel extends AdminModel
             $data = $this->getItem();
         }
 
+        if ($data) {
+            // We need to add the custom field values as properties to the main object so the form can
+            // be populated with those values.
+            foreach ($data->customFieldItemsKey as $key => $value) {
+                $data->$key = $value->realvalue;
+            }
+        }
+
         return $data;
+    }
+
+
+
+
+
+
+
+    /* Stub out the methods from AdminModel. */
+
+
+    /**
+     * Method to perform batch operations on an item or a set of items.
+     *
+     * @param   array  $commands  An array of commands to perform.
+     * @param   array  $pks       An array of item ids.
+     * @param   array  $contexts  An array of item contexts.
+     *
+     * @return  boolean  Returns true on success, false on failure.
+     *
+     * @since   1.7
+     */
+    public function batch($commands, $pks, $contexts)
+    {
+        // We don't use this.
+        return false;
+    }
+
+    /**
+     * Batch access level changes for a group of rows.
+     *
+     * @param   integer  $value     The new value matching an Asset Group ID.
+     * @param   array    $pks       An array of row IDs.
+     * @param   array    $contexts  An array of item contexts.
+     *
+     * @return  boolean  True if successful, false otherwise and internal error is set.
+     *
+     * @since   1.7
+     */
+    protected function batchAccess($value, $pks, $contexts)
+    {
+        // This method uses a table so we can't use the parent, but wouldn't anyway.
+        return false;
+    }
+
+    /**
+     * Batch copy items to a new category or current.
+     *
+     * @param   integer  $value     The new category.
+     * @param   array    $pks       An array of row IDs.
+     * @param   array    $contexts  An array of item contexts.
+     *
+     * @return  array|boolean  An array of new IDs on success, boolean false on failure.
+     *
+     * @since   1.7
+     */
+    protected function batchCopy($value, $pks, $contexts)
+    {
+        // This method uses a table so we can't use the parent, but wouldn't anyway.
+        return false;
+    }
+
+    /**
+     * Batch language changes for a group of rows.
+     *
+     * @param   string  $value     The new value matching a language.
+     * @param   array   $pks       An array of row IDs.
+     * @param   array   $contexts  An array of item contexts.
+     *
+     * @return  boolean  True if successful, false otherwise and internal error is set.
+     *
+     * @since   2.5
+     */
+    protected function batchLanguage($value, $pks, $contexts)
+    {
+        // This method uses a table so we can't use the parent, but wouldn't anyway.
+        return false;
+    }
+
+    /**
+     * Batch move items to a new category
+     *
+     * @param   integer  $value     The new category ID.
+     * @param   array    $pks       An array of row IDs.
+     * @param   array    $contexts  An array of item contexts.
+     *
+     * @return  boolean  True if successful, false otherwise and internal error is set.
+     *
+     * @since   1.7
+     */
+    protected function batchMove($value, $pks, $contexts)
+    {
+        // This method uses a table so we can't use the parent, but wouldn't anyway.
+        return false;
+    }
+
+
+    /**
+     * Batch tag a list of item.
+     *
+     * @param   integer  $value     The value of the new tag.
+     * @param   array    $pks       An array of row IDs.
+     * @param   array    $contexts  An array of item contexts.
+     *
+     * @return  boolean  True if successful, false otherwise and internal error is set.
+     *
+     * @since   3.1
+     */
+    protected function batchTag($value, $pks, $contexts)
+    {
+        // This method uses a table so we can't use the parent, but wouldn't anyway.
+        return false;
+    }
+
+
+    /**
+     * Method override to check-in a record or an array of record
+     *
+     * @param   mixed  $pks  The ID of the primary key or an array of IDs
+     *
+     * @return  integer|boolean  Boolean false if there is an error, otherwise the count of records checked in.
+     *
+     * @since   1.6
+     */
+    public function checkin($pks = array())
+    {
+        // This method uses a table so we can't use the parent.
+        return true;
+
+        // If at some point it becomes possible to 'check in' a Trello card, do that here.
+    }
+
+    /**
+     * Method override to check-out a record.
+     *
+     * @param   integer  $pk  The ID of the primary key.
+     *
+     * @return  boolean  True if successful, false if an error occurs.
+     *
+     * @since   1.6
+     */
+    public function checkout($pk = null)
+    {
+        // This method uses a table so we can't use the parent.
+        return false;
+
+        // If at some point it becomes possible to 'check out' a Trello card, do that here.
+    }
+
+    /**
+     * Method to delete one or more records.
+     *
+     * @param   array  &$pks  An array of record primary keys.
+     *
+     * @return  boolean  True if successful, false if an error occurs.
+     *
+     * @since   1.6
+     */
+    public function delete(&$pks)
+    {
+        // Trello Delete call here.
+        // @TODO
+
+        return false;
+    }
+
+    /**
+     * Method to change the title & alias.
+     *
+     * @param   integer  $categoryId  The id of the category.
+     * @param   string   $alias       The alias.
+     * @param   string   $title       The title.
+     *
+     * @return  array  Contains the modified title and alias.
+     *
+     * @since   1.7
+     */
+    protected function generateNewTitle($categoryId, $alias, $title)
+    {
+        // We don't use this.
+        return false;
     }
 
     /**
      * Method to get a single record.
      *
-     * @param   integer  $pk  The id of the primary key.
+     * @param   string  $id  The id of the card.
      *
      * @return  mixed  Object on success, false on failure.
      */
-    /*public function getItem($pk = null)
+    public function getItem($id = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the metadata field to an array.
-            $registry = new Registry;
-            $registry->loadString($item->metadata);
-            $item->metadata = $registry->toArray();
-
-            // Convert the images field to an array.
-            $registry = new Registry;
-            $registry->loadString($item->images);
-            $item->images = $registry->toArray();
-
-            if (!empty($item->id)) {
-                $item->tags = new JHelperTags;
-                $item->tags->getTagIds($item->id, 'com_weblinks.weblink');
-                $item->metadata['tags'] = $item->tags;
-            }
+        #$input = Factory::getApplication()->input;
+        $id = (!empty($id)) ? $id : $this->getState('designrequest.id');
+        #echo 'input<pre>'; var_dump($id); echo '</pre>'; exit;
+        if (!empty($id)) {
+            return DesignRequestsHelper::$trello_cards[$id];
         }
-
-        return $item;
-    }*/
-
-
-
-    /**
-     * Prepare and sanitise the table data prior to saving.
-     *
-     * @param   \Joomla\CMS\Table\Table  $table  A reference to a \Joomla\CMS\Table\Table object.
-     *
-     * @return  void
-     */
-    protected function prepareTable($table)
-    {
-        $date = Factory::getDate();
-        $user = Factory::getApplication()->getIdentity();
-
-        $table->title = htmlspecialchars_decode($table->title, ENT_QUOTES);
-        $table->alias = ApplicationHelper::stringURLSafe($table->alias);
-
-        if (empty($table->alias)) {
-            $table->alias = ApplicationHelper::stringURLSafe($table->title);
-        }
-
-        $table->modified    = $date->toSql();
-        $table->modified_by = $user->id;
-
-        if (empty($table->id)) {
-            $table->created    = $date->toSql();
-            $table->created_by = $user->id;
-        }
-
-        /*if (empty($table->id)) {
-            // Set the values
-
-            // Set ordering to the last item if not set
-            if (empty($table->ordering)) {
-                $db    = $this->getDbo();
-                $query = $db->getQuery(true)
-                    ->select('MAX(ordering)')
-                    ->from($db->quoteName('#__weblinks'));
-
-                $db->setQuery($query);
-                $max = $db->loadResult();
-
-                $table->ordering = $max + 1;
-            } else {
-                // Set the values
-                $table->modified    = $date->toSql();
-                $table->modified_by = $user->id;
-            }
-        }
-
-        // Increment the weblink version number.
-        $table->version++;*/
+        return false;
     }
 
     /**
-     * Method to prepare the saved data.
+     * Stock method to auto-populate the model state.
+     *
+     * @return  void
+     *
+     * @since   1.6
+     */
+    protected function populateState()
+    {
+        // This method uses a table so we can't use the parent.
+        return false;
+
+        // If we need it:
+
+        // Establish what $key should be:
+
+        // Then this is from the parent method:
+
+        // Get the pk of the record from the request.
+        /*$pk = \JFactory::getApplication()->input->getInt($key);
+        $this->setState($this->getName() . '.id', $pk);
+
+        // Load the parameters.
+        $value = \JComponentHelper::getParams($this->option);
+        $this->setState('params', $value);*/
+    }
+
+    /**
+     * Method to change the published state of one or more records.
+     *
+     * @param   array    &$pks   A list of the primary keys to change.
+     * @param   integer  $value  The value of the published state.
+     *
+     * @return  boolean  True on success.
+     *
+     * @since   1.6
+     */
+    public function publish(&$pks, $value = 1)
+    {
+        // This method uses a table so we can't use the parent.
+        return false;
+    }
+
+    /**
+     * Method to adjust the ordering of a row.
+     *
+     * Returns NULL if the user did not have edit
+     * privileges for any of the selected primary keys.
+     *
+     * @param   integer  $pks    The ID of the primary key to move.
+     * @param   integer  $delta  Increment, usually +1 or -1
+     *
+     * @return  boolean|null  False on failure or error, true on success, null if the $pk is empty (no items selected).
+     *
+     * @since   1.6
+     */
+    public function reorder($pks, $delta = 0)
+    {
+        // This method uses a table so we can't use the parent.
+        return false;
+    }
+
+    /**
+     * Method to save the form data.
      *
      * @param   array  $data  The form data.
      *
      * @return  boolean  True on success, False on error.
+     *
+     * @since   1.6
      */
     public function save($data)
     {
-        $is_new = empty($data['id']);
-        $app    = Factory::getApplication();
-        $input  = $app->input;
+        // This method uses a table so we can't use the parent the parent.
 
+        #echo '<pre>'; var_dump($data); echo '</pre>'; #exit;
 
-        // Get parameters:
-        #$params = \Joomla\CMS\Component\ComponentHelper::getParams(JRequest::getVar('option'));
-        $params = \Joomla\CMS\Component\ComponentHelper::getParams($input->get('option'));
-
-        // For reference if needed:
-        // By default we're only looking for and acting upon the 'email admins' setting.
-        // If any other settings are related to this save method, add them here.
-        /*$email_admins_string = $params->get('email_admins');
-        if (!empty($email_admins_string) && $is_new) {
-            $email_admins = explode(PHP_EOL, trim($email_admins_string));
-            foreach ($email_admins as $email) {
-                // Sending email as an array to make it easier to expand; it's quite likely that a
-                // real app would need more info here.
-                $email_data = array('email' => $email);
-                $this->_sendEmail($email_data);
-            }
-        }*/
-
-        // Alter the title for save as copy
-        if ($app->input->get('task') == 'save2copy') {
-            list($title, $alias) = $this->generateNewTitle(false, $data['alias'], $data['title']);
-            $data['title']    = $title;
-            $data['alias']    = $alias;
-            $data['state']    = 0;
+        $card_id = DesignRequestsHelper::trelloSaveCard($data);
+        if (!empty($card_id)) {
+            $this->setState($this->getName() . '.id', $card_id);
+            return true;
         }
-
-        // Automatic handling of alias for empty fields
-        // Taken from com_content/models/article.php
-        if (in_array($input->get('task'), array('apply', 'save', 'save2new'))) {
-            if (empty($data['alias'])) {
-                if (Factory::getConfig()->get('unicodeslugs') == 1) {
-                    $data['alias'] = \Joomla\CMS\Filter\OutputFilter::stringURLUnicodeSlug($data['title']);
-                } else {
-                    $data['alias'] = \Joomla\CMS\Filter\OutputFilter::stringURLSafe($data['title']);
-                }
-
-                $table = $this->getMVCFactory()->createTable('Designrequest', 'Administrator');
-
-                if ($table->load(array('alias' => $data['alias']))) {
-                    $msg = \Joomla\CMSanguage\Text::_('COM_CONTENT_SAVE_WARNING');
-                }
-
-                list($title, $alias) = $this->generateNewTitle(false, $data['alias'], $data['title']);
-                $data['alias'] = $alias;
-
-                if (isset($msg)) {
-                    Factory::getApplication()->enqueueMessage($msg, 'warning');
-                }
-            }
-        }
-
-        return parent::save($data);
+        return false;
     }
 
     /**
-     * Method to change the title & alias.
+     * Saves the manually set order of records.
      *
-     * @param   integer  $category_id  The id of the parent.
-     * @param   string   $alias        The alias.
-     * @param   string   $name         The title.
+     * @param   array    $pks    An array of primary key ids.
+     * @param   integer  $order  +1 or -1
      *
-     * @return  array  Contains the modified title and alias.
+     * @return  boolean|\JException  Boolean true on success, false on failure, or \JException if no items are selected
+     *
+     * @since   1.6
      */
-    protected function generateNewTitle($category_id, $alias, $name)
+    public function saveorder($pks = array(), $order = null)
     {
-        // Alter the title & alias
-        $table = $this->getTable();
-
-        while ($table->load(array('alias' => $alias))) {
-            if ($name == $table->title) {
-                $name = \Joomla\String\StringHelper::increment($name);
-            }
-
-            $alias = \Joomla\String\StringHelper::increment($alias, 'dash');
-        }
-
-        return array($name, $alias);
+        // This method uses a table so we can't use the parent.
+        return false;
     }
 
     /**
-     * Copied from libraries/src/MVC/Model/AdminModel.php because it uses a hard-coded field name:
-     * catid.
+     * Method to create a tags helper to ensure proper management of tags
      *
-     * Method to change the title & alias.
+     * @param   \JTableObserverTags  $tagsObserver  The tags observer for this table
+     * @param   \JUcmType            $type          The type for the table being processed
+     * @param   integer              $pk            Primary key of the item bing processed
+     * @param   string               $typeAlias     The type alias for this table
+     * @param   \JTable              $table         The \JTable object
      *
-     * @param   string   $alias        The alias.
-     * @param   string   $title        The title.
+     * @return  void
      *
-     * @return  array  Contains the modified title and alias.
+     * @since   3.2
      */
-    /*protected function generateNewDesignrequestsTitle($alias, $title)
+    public function createTagsHelper($tagsObserver, $type, $pk, $typeAlias, $table)
     {
-        // Alter the title & alias
-        $table = $this->getTable();
-
-        while ($table->load(array('alias' => $alias)))
-        {
-            $title = StringHelper::increment($title);
-            $alias = StringHelper::increment($alias, 'dash');
-        }
-
-        return array($title, $alias);
-    }*/
-
+        // This method uses a table so we can't use the parent.
+        return false;
+    }
 
     /**
-     * Method to get the script that have to be included on the form
+     * Method to check the validity of the category ID for batch copy and move
      *
-     * @return string   Script files
+     * @param   integer  $categoryId  The category ID to check
+     *
+     * @return  boolean
+     *
+     * @since   3.2
      */
-    /*public function getScript()
+    protected function checkCategoryId($categoryId)
     {
-        #return 'administrator/components/com_designrequests/models/forms/designrequests.js';
-        return '';
-    }*/
+        // This method uses a table so we can't use the parent, and we're not using categories.
+        return false;
+    }
 
     /**
-     * Delete this if not needed. Here for reference.
-     * Method to get the data that should be injected in the form.
+     * A method to preprocess generating a new title in order to allow tables with alternative names
+     * for alias and title to use the batch move and copy methods
      *
-     * @return  bool  Email success/failed to send.
+     * @param   integer  $categoryId  The target category id
+     * @param   \JTable  $table       The \JTable within which move or copy is taking place
+     *
+     * @return  void
+     *
+     * @since   3.2
      */
-    /*private function _sendEmail($email_data)
+    public function generateTitle($categoryId, $table)
     {
-            $app        = Factory::getApplication();
-            $mailfrom   = $app->getCfg('mailfrom');
-            $fromname   = $app->getCfg('fromname');
-            $sitename   = $app->getCfg('sitename');
-            $email      = \Joomla\String\StringHelperPunycode::emailToPunycode($email_data['email']);
+        // We're not using this.
+        return false;
+    }
 
-            // Ref: Text::sprintf('LANG_STR', $var, ...);
+    /**
+     * Method to initialize member variables used by batch methods and other methods like saveorder()
+     *
+     * @return  void
+     *
+     * @since   3.8.2
+     */
+    public function initBatch()
+    {
+        // This method uses a table so we can't use the parent.
+        return false;
+    }
 
-            $mail = Factory::getMailer();
-            $mail->addRecipient($email);
-            $mail->addReplyTo($mailfrom);
-            $mail->setSender(array($mailfrom, $fromname));
-            $mail->setSubject(Text::_('COM_DESIGNREQUESTS_EMAIL_ADMINS_SUBJECT'));
-            $mail->setBody(Text::_('COM_DESIGNREQUESTS_EMAIL_ADMINS_BODY'));
-            $sent = $mail->Send();
-
-            return $sent;
-    }*/
 }

@@ -23,9 +23,13 @@ $user    = Factory::getApplication()->getIdentity();
 $user_id = $user->get('id');
 #$this->document->getWebAssetManager()->useScript('com_designrequests.enable-tooltips');
 
-$listOrder     = $this->escape($this->state->get('list.ordering'));
-$listDirn      = $this->escape($this->state->get('list.direction'));
+#$listOrder     = $this->escape($this->state->get('list.ordering'));
+#$listDirn      = $this->escape($this->state->get('list.direction'));
 
+?>
+<p>Nothing here yet. There may be some tools if I need them.</p>
+<?php
+/*
 ?>
 <form action="<?php echo Route::_('index.php?option=com_designrequests&view=designrequests'); ?>" method="post" id="adminForm" name="adminForm">
     <div class="row">
@@ -125,3 +129,4 @@ $listDirn      = $this->escape($this->state->get('list.direction'));
         </div>
     </div>
 </form>
+*/?>

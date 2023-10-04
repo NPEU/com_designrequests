@@ -31,7 +31,7 @@ class DesignrequestsModel extends ListModel
      *
      * @see     JController
      */
-    public function __construct($config = array())
+    /*public function __construct($config = array())
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
@@ -55,7 +55,7 @@ class DesignrequestsModel extends ListModel
         }
 
         parent::__construct($config);
-    }
+    }*/
 
     /**
      * Method to auto-populate the model state.
@@ -67,7 +67,7 @@ class DesignrequestsModel extends ListModel
      *
      * @note    Calling getState in this method will result in recursion.
      */
-    protected function populateState($ordering = 'a.title', $direction = 'ASC')
+    /*protected function populateState($ordering = 'a.title', $direction = 'ASC')
     {
         // Load the filter state.
         $this->setState('filter.search', $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', 'string'));
@@ -79,7 +79,7 @@ class DesignrequestsModel extends ListModel
 
         // List state information.
         parent::populateState($ordering, $direction);
-    }
+    }*/
 
     /**
      * Method to get a store id based on model configuration state.
@@ -92,21 +92,21 @@ class DesignrequestsModel extends ListModel
      *
      * @return  string  A store id.
      */
-    protected function getStoreId($id = '')
+    /*protected function getStoreId($id = '')
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.published');
 
         return parent::getStoreId($id);
-    }
+    }*/
 
     /**
      * Method to build an SQL query to load the list data.
      *
      * @return      string  An SQL query
      */
-    protected function getListQuery()
+    /*protected function getListQuery()
     {
         // Initialize variables.
         $db    = $this->getDbo();
@@ -157,5 +157,5 @@ class DesignrequestsModel extends ListModel
         $query->order($db->escape($orderCol) . ' ' . $db->escape($orderDirn));
 
         return $query;
-    }
+    }*/
 }

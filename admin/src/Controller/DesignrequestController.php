@@ -30,10 +30,10 @@ class DesignrequestController extends FormController
     * @param array $data
     * @return bool
     */
-    protected function allowAdd($data = array())
+    /*protected function allowAdd($data = array())
     {
         return parent::allowAdd($data);
-    }
+    }*/
     /**
     * Implement to allow edit or not
     * Overwrites: JControllerForm::allowEdit
@@ -42,14 +42,14 @@ class DesignrequestController extends FormController
     * @param string $key
     * @return bool
     */
-    protected function allowEdit($data = array(), $key = 'id')
+    /*protected function allowEdit($data = array(), $key = 'id')
     {
         $id = isset( $data[ $key ] ) ? $data[ $key ] : 0;
         if( !empty( $id ) )
         {
             return Factory::getApplication()->getIdentity()->authorise( "core.edit", "com_designrequests.designrequest." . $id );
         }
-    }
+    }*/
 
     /*public function batch($model = null)
     {

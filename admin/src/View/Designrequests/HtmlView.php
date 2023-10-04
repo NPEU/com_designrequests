@@ -28,35 +28,35 @@ class HtmlView extends BaseHtmlView {
      *
      * @var  array
      */
-    protected $items;
+    #protected $items;
 
     /**
      * The pagination object
      *
      * @var  \Joomla\CMS\Pagination\Pagination
      */
-    protected $pagination;
+    #protected $pagination;
 
     /**
      * The model state
      *
      * @var  \Joomla\CMS\Object\CMSObject
      */
-    protected $state;
+    #protected $state;
 
     /**
      * Form object for search filters
      *
      * @var  \Joomla\CMS\Form\Form
      */
-    public $filterForm;
+    #public $filterForm;
 
     /**
      * The active search filters
      *
      * @var  array
      */
-    public $activeFilters;
+    #public $activeFilters;
 
     /**
     * Is this view an Empty State
@@ -64,7 +64,7 @@ class HtmlView extends BaseHtmlView {
     * @var  boolean
     * @since 4.0.0
     */
-    private $isEmptyState = false;
+    #private $isEmptyState = false;
 
     /**
      * Display the main "Designrequests" view
@@ -77,11 +77,11 @@ class HtmlView extends BaseHtmlView {
         $app = Factory::getApplication();
 
         // Get data from the model
-        $this->items         = $this->get('Items');
-        $this->pagination    = $this->get('Pagination');
-        $this->state         = $this->get('State');
-        $this->filterForm    = $this->get('FilterForm');
-        $this->activeFilters = $this->get('ActiveFilters');
+        #$this->items         = $this->get('Items');
+        #$this->pagination    = $this->get('Pagination');
+        #$this->state         = $this->get('State');
+        #$this->filterForm    = $this->get('FilterForm');
+        #$this->activeFilters = $this->get('ActiveFilters');
 
         // What Access Permissions does this user have? What can (s)he do?
         $this->canDo = ContentHelper::getActions('com_designrequests');
@@ -91,9 +91,9 @@ class HtmlView extends BaseHtmlView {
             throw new GenericDataException(implode("\n", $errors), 500);
         }
 
-        if (!count($this->items) && $this->isEmptyState = $this->get('IsEmptyState')) {
-            $this->setLayout('emptystate');
-        }
+        #if (!count($this->items) && $this->isEmptyState = $this->get('IsEmptyState')) {
+        #    $this->setLayout('emptystate');
+        #}
         #echo '<pre>'; var_dump($this->getLayout()); echo '</pre>'; exit;
         if ($this->getLayout() !== 'modal') {
             $this->addToolBar();
@@ -136,15 +136,15 @@ class HtmlView extends BaseHtmlView {
         }*/
         ToolBarHelper::title($title, 'Messages');
 
-        if ($this->canDo->get('core.create')) {
+        /*if ($this->canDo->get('core.create')) {
             ToolBarHelper::addNew('designrequest.add', 'JTOOLBAR_NEW');
         }
         if ($this->canDo->get('core.edit')) {
             ToolBarHelper::editList('designrequest.edit', 'JTOOLBAR_EDIT');
-        }
+        }*/
 
 
-        if (!$this->isEmptyState && ($this->canDo->get('core.edit.state'))) {
+        /*if (!$this->isEmptyState && ($this->canDo->get('core.edit.state'))) {
             if ($this->canDo->get('core.delete')) {
                 //ToolBarHelper::deleteList('', 'designrequests.delete', 'JTOOLBAR_DELETE');
                 if ($this->state->get('filter.published') != -2) {
@@ -164,15 +164,15 @@ class HtmlView extends BaseHtmlView {
                 $layout = new FileLayout('joomla.toolbar.batch');
                 $batchButtonHtml = $layout->render(array('title' => Text::_('JTOOLBAR_BATCH')));
                 $bar->appendButton('Custom', $batchButtonHtml, 'batch');
-            }*/
-        }
+            }  *  /
+        }*/
 
-        if (!$this->isEmptyState && $this->state->get('filter.published') == -2 && $this->canDo->get('core.delete')) {
+       /* if (!$this->isEmptyState && $this->state->get('filter.published') == -2 && $this->canDo->get('core.delete')) {
             ToolBarHelper::deleteList('', 'designrequests.delete', 'JTOOLBAR_EMPTY_TRASH');
             /*$toolbar->delete('designrequests.delete', 'JTOOLBAR_EMPTY_TRASH')
                 ->message('JGLOBAL_CONFIRM_DELETE')
-                ->listCheck(true);*/
-        }
+                ->listCheck(true);*  /
+        }*/
 
         if ($this->canDo->get('core.admin')) {
             ToolBarHelper::divider();

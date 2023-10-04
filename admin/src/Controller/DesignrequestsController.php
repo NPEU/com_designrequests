@@ -17,8 +17,8 @@ use Joomla\CMS\MVC\Controller\AdminController;
 class DesignrequestsController extends AdminController
 {
 
-    public function getModel($name = 'Designrequest', $prefix = 'Administrator', $config = array('ignore_request' => true))
+    /*public function getModel($name = 'Designrequest', $prefix = 'Administrator', $config = array('ignore_request' => true))
     {
         return parent::getModel($name, $prefix, $config);
-    }
+    }*/
 }
