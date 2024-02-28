@@ -33,6 +33,7 @@
             class=""
             labelclass=""
             dateformat="d M Y"
+            filterformat="Y-m-d"
         />
         <field
             name="requested_on"
