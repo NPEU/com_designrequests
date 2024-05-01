@@ -8,6 +8,8 @@
  */
 
 namespace NPEU\Component\Designrequests\Administrator\Helper;
+
+defined('_JEXEC') or die;
 /*
 use Joomla\CMS\Association\AssociationExtensionInterface;
 use Joomla\CMS\Association\AssociationServiceInterface;
@@ -21,10 +23,6 @@ use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 */
 use Joomla\CMS\Factory;
-
-// phpcs:disable PSR1.Files.SideEffects
-\defined('_JEXEC') or die;
-// phpcs:enable PSR1.Files.SideEffects
 
 /**
  * DesignrequestssHelper Component Model
@@ -477,7 +475,7 @@ class DesignrequestsHelper
     /*public static function getActions($itemId = 0, $model = null)
     {
         jimport('joomla.access.access');
-        $user   = JFactory::getUser();
+        $user   = Factory::getUser();
         $result = new JObject;
 
         if (empty($itemId)) {

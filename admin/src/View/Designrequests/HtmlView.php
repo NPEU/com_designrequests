@@ -12,15 +12,15 @@ namespace NPEU\Component\Designrequests\Administrator\View\Designrequests;
 defined('_JEXEC') or die;
 
 
+use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\MVC\View\GenericDataException;
+use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ContentHelper;
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
-use Joomla\CMS\MVC\View\GenericDataException;
-use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
-use Joomla\CMS\Toolbar\Toolbar;
-use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
-use Joomla\CMS\Toolbar\ToolbarHelper;
 
 class HtmlView extends BaseHtmlView {
     /**
@@ -120,8 +120,6 @@ class HtmlView extends BaseHtmlView {
 
         // Display the layout
         parent::display($tpl);
-
-        $this->setDocument();
     }
 
     protected function addToolBar()
@@ -179,11 +177,4 @@ class HtmlView extends BaseHtmlView {
             ToolBarHelper::preferences('com_designrequests');
         }
     }
-
-    protected function setDocument()
-    {
-        //$document = Factory::getApplication()->getDocument();
-        $this->document->setTitle(Text::_('COM_DESIGNREQUESTS_ADMINISTRATION'));
-    }
-
 }
