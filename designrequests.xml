@@ -9,7 +9,7 @@
     <copyright>(C) NPEU 2023</copyright>
     <license>MIT License; see LICENSE.md</license>
 
-    <version>4.0.0</version>
+    <version>4.0.1</version>
     <description>COM_DESIGNREQUESTS_DESCRIPTION</description>
 
     <namespace path="src">NPEU\Component\Designrequests</namespace>
@@ -35,6 +35,7 @@
             <folder>services</folder>
             <folder>src</folder>
             <folder>tmpl</folder>
+            <folder>vendor</folder>
         </files>
     </administration>
 
