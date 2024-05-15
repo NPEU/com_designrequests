@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form
+    addrulepath="/administrator/components/com_designrequests/models/rules"
+    addfieldpath="/administrator/components/com_designrequests/models/fields"
+>
+    <fieldset
+        name="main"
+        label="COM_DESIGNREQUESTS_FIELDSET_MAIN_LABEL"
+    >
+        <field
+            name="id"
+            type="hidden"
+            default="0"
+        />
+        <field
+            name="name"
+            type="text"
+            size="30"
+            label="COM_DESIGNREQUESTS_TITLE_LABEL"
+            description="COM_DESIGNREQUESTS_TITLE_DESC"
+            filter="string"
+            required="true"
+            class=""
+            labelclass=""
+        />
+        <field
+            name="due"
+            type="calendar"
+            label="COM_DESIGNREQUESTS_DEADLINE_LABEL"
+            description="COM_DESIGNREQUESTS_DEADLINE_DESC"
+            filter="string"
+            required="true"
+            class=""
+            labelclass=""
+            dateformat="d M Y"
+            filterformat="Y-m-d"
+        />
+        <field
+            name="requested_on"
+            type="hidden"
+            label="COM_DESIGNREQUESTS_REQUESTED_ON_LABEL"
+            dateformat="d M Y H:i"
+        />
+        <field
+            name="requested_by"
+            type="hidden"
+            label="COM_DESIGNREQUESTS_REQUESTED_BY_LABEL"
+            stringsearch="(.*?)\s&lt;(.*)&gt;"
+            stringreplace="[$1](mailto:$2)"
+        />
+        <field
+            name="project"
+            type="projects"
+            label="COM_DESIGNREQUESTS_PROJECTS_LABEL"
+            description="COM_DESIGNREQUESTS_PROJECTS_DESC"
+            default="COM_DESIGNREQUESTS_PROJECTS_DEFAULT"
+            class=""
+            required="true"
+        >
+            <option value="">COM_DESIGNREQUESTS_PROJECTS_DEFAULT</option>
+        </field>
+        <field
+            name="job_type"
+            type="jobtypes"
+            label="COM_DESIGNREQUESTS_JOBTYPES_LABEL"
+            description="COM_DESIGNREQUESTS_JOBTYPES_DESC"
+            default="COM_DESIGNREQUESTS_JOBTYPES_DEFAULT"
+            class=""
+            required="true"
+        >
+            <option value="">COM_DESIGNREQUESTS_JOBTYPES_DEFAULT</option>
+        </field>
+        <field
+            name="print"
+            type="printing"
+            label="COM_DESIGNREQUESTS_PRINTING_LABEL"
+            description="COM_DESIGNREQUESTS_PRINTING_DESC"
+            default="COM_DESIGNREQUESTS_PRINTING_DEFAULT"
+            class=""
+            required="true"
+        >
+            <option value="">COM_DESIGNREQUESTS_PRINTING_DEFAULT</option>
+        </field>
+        <field
+            name="print_size"
+            type="printsizes"
+            label="COM_DESIGNREQUESTS_PRINTSIZE_LABEL"
+            description="COM_DESIGNREQUESTS_PRINTSIZE_DESC"
+            default="COM_DESIGNREQUESTS_PRINTSIZE_DEFAULT"
+            class=""
+            required="true"
+        >
+            <option value="">COM_DESIGNREQUESTS_PRINTSIZE_DEFAULT</option>
+        </field>
+        <field
+            name="status"
+            type="hidden"
+            label="COM_DESIGNREQUESTS_STATUS_LABEL"
+
+        />
+        <field
+            name="desc"
+            type="textarea"
+            rows="8"
+            cols="30"
+            label="COM_DESIGNREQUESTS_DESCRIPTION_LABEL"
+            description="COM_DESIGNREQUESTS_DESCRIPTION_DESC"
+            filter="string"
+            required="true"
+            class=""
+            labelclass=""
+        />
+    </fieldset>
+</form>
