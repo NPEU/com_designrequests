@@ -87,7 +87,6 @@ class HtmlView extends BaseHtmlView {
         // Load admin lang file for use in the form:
         $app->getLanguage()->load('com_designrequests', JPATH_COMPONENT_ADMINISTRATOR);
 
-
         $uri    = Uri::getInstance();
         $menus  = $app->getMenu();
         $menu   = $menus->getActive();

@@ -15,6 +15,7 @@ namespace NPEU\Component\Designrequests\Site\Service;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Log\Log;
 
 /**
  * RouterRules interface for Joomla
@@ -62,7 +63,7 @@ class CustomRouterRules implements \Joomla\CMS\Component\Router\Rules\RulesInter
         $uri = explode('/', Uri::getInstance());
         $id = array_slice($uri, -2, 1)[0];
         $vars['id'] = $id;
-
+        #echo 'vars<pre>'; var_dump($vars); echo '</pre>'; exit;
         if (isset($vars['view'])) {
 
             if ($vars['view'] == 'edit') {
@@ -103,17 +104,26 @@ class CustomRouterRules implements \Joomla\CMS\Component\Router\Rules\RulesInter
      */
     public function build(&$query, &$segments) {
         if (isset($query['task']) && $query['task'] == 'designrequest.edit') {
+            Log::add('Here 1');
             $segments[] = 'edit';
             //$segments[] = $query['id'];
             unset ($query['task']);
             unset ($query['id']);
         }
 
-        if (isset($query['layout']) && $query['layout'] == 'edit') {
+        if (isset($query['task']) && $query['task'] == 'designrequest.add') {
+            Log::add('Here ADD');
+            $segments[] = 'add';
+            //$segments[] = $query['id'];
+            unset ($query['task']);
+        }
+
+        /*if (isset($query['layout']) && $query['layout'] == 'edit') {
+            Log::add('Here 2');
             $segments[] = 'edit';
             //$segments[] = $query['id'];
             unset ($query['layout']);
-        }
+        }*/
 
         /*if (isset($query['layout']) && $query['layout'] == 'other') {
             $segments[] = 'other';

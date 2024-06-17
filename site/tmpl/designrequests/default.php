@@ -60,7 +60,7 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
     </symbol>
 </svg>
 <p>
-    <a href="<?php echo Route::_('index.php?option=com_designrequests&task=designrequest.add'); ?>" class="c-cta">Submit a new design request</a>
+    <a href="<?php echo Route::_('index.php?option=com_designrequests&view=designrequest&task=designrequest.add'); ?>" class="c-cta">Submit a new design request</a>
 </p>
 <table class="table table-striped table-hover" id="<?php echo $table_id; ?>">
     <thead>
@@ -92,7 +92,7 @@ $close_diff  = 60 * 60 * 24 * 7; // 7 Days
         <?php if (!empty($this->items)) : ?>
         <?php foreach ($this->items as $i => $item) :
             $view_link = Route::_('index.php?option=com_designrequests&view=designrequest&id=' . $item->id);
-            $edit_link = Route::_('index.php?option=com_designrequests&task=designrequest.edit&id=' . $item->id);
+            $edit_link = Route::_('index.php?option=com_designrequests&view=designrequest&task=designrequest.edit&id=' . $item->id);
             $is_own = false;
             #echo '<pre>'; var_dump($this->user->name); echo '</pre>';
             #echo '<pre>'; var_dump($item->customFieldItemsKey['requested_by']->realvalue); echo '</pre>';

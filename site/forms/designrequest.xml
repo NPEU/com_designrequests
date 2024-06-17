@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form
-    addrulepath="/administrator/components/com_designrequests/models/rules"
-    addfieldpath="/administrator/components/com_designrequests/models/fields"
+    addruleprefix="NPEU\Component\Designrequests\Administrator\Rule"
+    addfieldprefix="NPEU\Component\Designrequests\Administrator\Field"
 >
     <fieldset
         name="main"

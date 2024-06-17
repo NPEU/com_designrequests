@@ -56,10 +56,10 @@ class FormModel extends \NPEU\Component\Designrequests\Administrator\Model\Desig
         $form = $this->loadForm(
             'com_designrequests.form',
             'designrequest',
-            array(
+            [
                 'control' => 'jform',
                 'load_data' => $loadData
-            )
+            ]
         );
 
         if (empty($form))
@@ -85,7 +85,7 @@ class FormModel extends \NPEU\Component\Designrequests\Administrator\Model\Desig
         // Check the session for previously entered form data.
         $data = Factory::getApplication()->getUserState(
             'com_designrequests.edit.designrequest.data',
-            array()
+            []
         );
 
         return $data;

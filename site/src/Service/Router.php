@@ -64,6 +64,12 @@ class Router extends RouterView
         #$designrequests->addLayout('other');
         $this->registerView($designrequests);
 
+
+        $add = new RouterViewConfiguration('add');
+        $add->setParent($designrequests);
+        $this->registerView($add);
+
+
         $designrequest = new RouterViewConfiguration('designrequest');
         $designrequest->setKey('id')->setParent($designrequests);
         $this->registerView($designrequest);
@@ -80,9 +86,6 @@ class Router extends RouterView
         $other->setParent($designrequests);
         $this->registerView($other);*/
 
-        $add = new RouterViewConfiguration('add');
-        $add->setParent($designrequests);
-        $this->registerView($add);
 
         //$this->attachRule(new CustomRouterRules($this));
 
