@@ -360,7 +360,7 @@ class DesignrequestModel extends AdminModel
         #$input = Factory::getApplication()->input;
         $id = (!empty($id)) ? $id : $this->getState('designrequest.id');
         #echo 'input<pre>'; var_dump($id); echo '</pre>'; exit;
-        if (!empty($id)) {
+        if (!empty($id) && isset(DesignRequestsHelper::$trello_cards[$id])) {
             return DesignRequestsHelper::$trello_cards[$id];
         }
         return false;
