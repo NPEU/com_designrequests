@@ -43,7 +43,7 @@ class DesignrequestModel extends AdminModel
      * @see     \JModelLegacy
      * @since   1.6
      */
-    public function __construct($config = array())
+    public function __construct($config = [])
     {
         parent::__construct($config);
 
@@ -67,7 +67,7 @@ class DesignrequestModel extends AdminModel
         Ugh! Consider this all 'tainted'. I guess using an API as a model in Joomla just isn't
         possible to to neatly, without replicating Joomla code :-(
     */
-    public function getTable($name = '', $prefix = 'Table', $options = array())
+    public function getTable($name = '', $prefix = 'Table', $options = [])
     {
         $table = new class {
             public $spoof = false;
@@ -115,16 +115,16 @@ class DesignrequestModel extends AdminModel
      * @return  \JForm|boolean  A \JForm object on success, false on failure
      *
      */
-    public function getForm($data = array(), $loadData = true)
+    public function getForm($data = [], $loadData = true)
     {
         // Get the form.
         $form = $this->loadForm(
             'com_designrequests.designrequest',
             'designrequest',
-            array(
+            [
                 'control' => 'jform',
                 'load_data' => $loadData
-            )
+            ]
         );
 
         if (empty($form)) {
@@ -143,13 +143,13 @@ class DesignrequestModel extends AdminModel
     protected function loadFormData()
     {
         if ($this->is_in_list_view) {
-            return false;
+            return [];
         }
 
         // Check the session for previously entered form data.
         $data = Factory::getApplication()->getUserState(
             'com_designrequests.edit.designrequest.data',
-            array()
+            []
         );
 
         if (empty($data)) {
@@ -163,7 +163,6 @@ class DesignrequestModel extends AdminModel
                 $data->$key = $value->realvalue;
             }
         }
-
         return $data;
     }
 
@@ -289,7 +288,7 @@ class DesignrequestModel extends AdminModel
      *
      * @since   1.6
      */
-    public function checkin($pks = array())
+    public function checkin($pks = [])
     {
         // This method uses a table so we can't use the parent.
         return true;
@@ -461,7 +460,7 @@ class DesignrequestModel extends AdminModel
      *
      * @since   1.6
      */
-    public function saveorder($pks = array(), $order = null)
+    public function saveorder($pks = [], $order = null)
     {
         // This method uses a table so we can't use the parent.
         return false;
