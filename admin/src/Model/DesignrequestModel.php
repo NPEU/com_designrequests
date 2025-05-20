@@ -362,7 +362,7 @@ class DesignrequestModel extends AdminModel
         if (!empty($id) && isset(DesignRequestsHelper::$trello_cards[$id])) {
             return DesignRequestsHelper::$trello_cards[$id];
         }
-        return false;
+        return [];
     }
 
     /**
@@ -439,8 +439,6 @@ class DesignrequestModel extends AdminModel
     public function save($data)
     {
         // This method uses a table so we can't use the parent the parent.
-
-        #echo '<pre>'; var_dump($data); echo '</pre>'; #exit;
 
         $card_id = DesignRequestsHelper::trelloSaveCard($data);
         if (!empty($card_id)) {
