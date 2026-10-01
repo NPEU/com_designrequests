@@ -1,4 +1,6 @@
-<?php namespace Stevenmaguire\Services\Trello;
+<?php
+
+namespace Stevenmaguire\Services\Trello;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
@@ -6,13 +8,14 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
 
 class Http
 {
-    const HTTP_DELETE = 'DELETE';
-    const HTTP_GET = 'GET';
-    const HTTP_POST = 'POST';
-    const HTTP_PUT = 'PUT';
+    public const HTTP_DELETE = 'DELETE';
+    public const HTTP_GET = 'GET';
+    public const HTTP_POST = 'POST';
+    public const HTTP_PUT = 'PUT';
 
     /**
      * Multipart resources to include in next request.
@@ -33,7 +36,7 @@ class Http
      */
     public function __construct()
     {
-        $this->httpClient = new HttpClient;
+        $this->httpClient = new HttpClient();
     }
 
     /**
@@ -70,7 +73,7 @@ class Http
         if (isset($parameters['file'])) {
             $this->queueResourceAs(
                 'file',
-                Psr7\stream_for($parameters['file'])
+                Psr7\Utils::streamFor($parameters['file'])
             );
             unset($parameters['file']);
         }
@@ -176,10 +179,10 @@ class Http
     protected function getRequestOptions()
     {
         $options = [
-            'proxy' => Configuration::get('proxy')
+            'proxy' => Configuration::get('proxy'),
         ];
 
-        if (!empty(array_filter($this->multipartResources))) {
+        if (! empty(array_filter($this->multipartResources))) {
             $options['multipart'] = $this->multipartResources;
         }
 
@@ -240,7 +243,7 @@ class Http
     public function putAsBody($path, $parameters)
     {
         $request = $this->getRequest(static::HTTP_PUT, $path)
-            ->withBody(Psr7\stream_for(json_encode($parameters)))
+            ->withBody(Psr7\Utils::streamFor(json_encode($parameters)))
             ->withHeader('content-type', 'application/json');
 
         return $this->sendRequest($request);
@@ -250,7 +253,7 @@ class Http
      * Adds a given resource to multipart stream collection, to be processed by next request.
      *
      * @param  string                                           $name
-     * @param  resource|string|Psr\Http\Message\StreamInterface $resource
+     * @param  resource|string|StreamInterface $resource
      *
      * @return void
      */
@@ -280,7 +283,7 @@ class Http
 
             $this->multipartResources = [];
 
-            return json_decode($response->getBody());
+            return json_decode((string) $response->getBody());
         } catch (RequestException $e) {
             $this->throwRequestException($e);
         }
@@ -319,11 +322,13 @@ class Http
             $requestException
         );
 
-        $body = $exceptionParts['body'];
-        $json = json_decode($body);
 
-        if (json_last_error() == JSON_ERROR_NONE) {
-            throw $exception->setResponseBody($json);
+        if ($body = $exceptionParts['body']) {
+            $json = json_decode($body);
+
+            if (json_last_error() == JSON_ERROR_NONE) {
+                throw $exception->setResponseBody($json);
+            }
         }
 
         throw $exception->setResponseBody($body);
